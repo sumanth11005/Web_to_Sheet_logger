@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "My Chrome Extension",
+  "name": "Task_3Chrome Extension",
   "version": "1.0",
   "description": "A simple Chrome extension with a popup and content script.",
   "permissions": ["activeTab"],
