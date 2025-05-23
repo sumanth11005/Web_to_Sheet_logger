@@ -1,9 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Task_3Chrome Extension",
+  "name": "Web_to_Sheet_Logger",
   "version": "1.0",
   "description": "A simple Chrome extension with a popup and content script.",
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "https://script.google.com/*"],
+  "host_permissions": ["https://script.google.com/*"],
+
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -17,5 +19,8 @@
       "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
-  ]
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
 }

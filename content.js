@@ -101,8 +101,30 @@ document.addEventListener('mouseup', function () {
         // Handle "Send to Sheet" button click
         document.getElementById('send-to-sheet').onclick = function () {
           console.log('Sending to sheet:', metadata);
-          alert('Data sent to sheet (placeholder for actual implementation).');
-          popup.style.display = 'none';
+
+          // Add loading state
+          const sendButton = document.getElementById('send-to-sheet');
+          sendButton.textContent = 'Sending...';
+          sendButton.disabled = true;
+
+          chrome.runtime.sendMessage(
+            {
+              action: "sendToSheet",
+              metadata,
+            },
+            (response) => {
+              if (response.status === "success") {
+                alert("Data sent to sheet successfully!");
+                popup.style.display = 'none';
+              } else {
+                alert(`Failed to send data: ${response.message}`);
+              }
+            }
+          );
+
+          // Reset button state
+          sendButton.textContent = 'Send to Sheet';
+          sendButton.disabled = false;
         };
 
         // Handle "Close" button click
