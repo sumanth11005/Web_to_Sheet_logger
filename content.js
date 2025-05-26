@@ -64,18 +64,52 @@ function definePopup() {
   document.body.appendChild(popup);
 }
 
+// Adjust button placement to stay within viewport boundaries
+function adjustButtonPosition(x, y) {
+  const buttonWidth = saveButton.offsetWidth;
+  const buttonHeight = saveButton.offsetHeight;
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  let adjustedX = x;
+  let adjustedY = y;
+
+  if (x + buttonWidth > viewportWidth) {
+    adjustedX = viewportWidth - buttonWidth - 10; // Add some padding
+  }
+  if (y + buttonHeight > viewportHeight) {
+    adjustedY = viewportHeight - buttonHeight - 10; // Add some padding
+  }
+
+  saveButton.style.left = `${adjustedX}px`;
+  saveButton.style.top = `${adjustedY}px`;
+}
+
+// Add smooth animations for button appearance/disappearance
+saveButton.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+
+function showSaveButton(x, y) {
+  // Restore the previous logic for positioning the Save button
+  adjustButtonPosition(x, y);
+  saveButton.style.display = 'block';
+  saveButton.style.opacity = '1';
+  saveButton.style.transform = 'scale(1)';
+}
+
+function hideSaveButton() {
+  saveButton.style.opacity = '0';
+  saveButton.style.transform = 'scale(0.9)';
+  setTimeout(() => {
+    saveButton.style.display = 'none';
+  }, 300); // Match the transition duration
+}
+
 // Event listener for text selection
-document.addEventListener('mouseup', function () {
+document.addEventListener('mouseup', function (event) {
   const selectedText = window.getSelection().toString().trim();
 
   if (selectedText) {
-    const range = window.getSelection().getRangeAt(0);
-    const rect = range.getBoundingClientRect();
-
-    // Position the button near the selection
-    saveButton.style.top = `${window.scrollY + rect.bottom + 5}px`;
-    saveButton.style.left = `${window.scrollX + rect.left}px`;
-    saveButton.style.display = 'block';
+    showSaveButton(event.pageX, event.pageY);
 
     // Save the selected text when the button is clicked
     saveButton.onclick = function () {
@@ -135,14 +169,24 @@ document.addEventListener('mouseup', function () {
       saveButton.style.display = 'none'; // Hide the button after saving
     };
   } else {
-    // Hide the button if no text is selected
-    saveButton.style.display = 'none';
+    hideSaveButton();
   }
 });
 
 // Hide the button when clicking elsewhere
 document.addEventListener('mousedown', function (event) {
   if (!saveButton.contains(event.target)) {
-    saveButton.style.display = 'none';
+    hideSaveButton();
   }
 });
+
+// Add a check for mixed content and log a warning
+function checkMixedContent() {
+  const insecureElements = document.querySelectorAll('img[src^="http://"], script[src^="http://"], link[href^="http://"]');
+  if (insecureElements.length > 0) {
+    console.warn("Mixed content detected. Some resources are being loaded over HTTP:", insecureElements);
+  }
+}
+
+// Call the function to check for mixed content
+checkMixedContent();

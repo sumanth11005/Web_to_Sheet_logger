@@ -3,8 +3,29 @@
 <head>
   <title>Popup</title>
   <script src="popup.js"></script>
+  <style>
+    .spinner {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #000;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 </head>
 <body>
   <h1>Hello from Popup!</h1>
+  <div class="spinner" id="loadingSpinner"></div>
 </body>
 </html>

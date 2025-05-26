@@ -2,7 +2,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "sendToSheet") {
     const sendToSheet = async () => {
       try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbxHG9Ne8JVsIZCR3Hwn2ctMnTr8wvHUZX80xJqzH58LxcSf46jjFiFFaiRyo34MX2n2/exec", {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbwpTy_jgOh3xqNq-Ncfc8TZyNSmZv-DKeKKEoe9m2fjtgwyu0SNt8I2PQLnl5b1T3x5/exec", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
