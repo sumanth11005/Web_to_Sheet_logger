@@ -1,20 +1,26 @@
 document.addEventListener('DOMContentLoaded', function() {
   console.log('Popup loaded');
-
-  const spinner = document.getElementById('loadingSpinner');
-
-  function showSpinner() {
-    spinner.style.display = 'block';
-  }
-
-  function hideSpinner() {
-    spinner.style.display = 'none';
-  }
-
-  // Example usage: simulate sending state
-  showSpinner();
-  setTimeout(() => {
-    hideSpinner();
-    alert('Data sent successfully!');
-  }, 3000); // Simulate a 3-second send
 });
+
+document.getElementById('retry-failed-saves').onclick = function () {
+  chrome.storage.local.get('failedSave', (data) => {
+    if (data.failedSave) {
+      const metadata = data.failedSave;
+      chrome.storage.local.remove('failedSave', () => {
+        alert('Retrying failed save...');
+        chrome.runtime.sendMessage({
+          action: "sendToSheet",
+          metadata,
+        }, (response) => {
+          if (response && response.status === "success") {
+            alert("Retry successful. Data sent to Google Sheet.");
+          } else {
+            alert(`Retry failed: ${response?.message || "Unknown error occurred."}`);
+          }
+        });
+      });
+    } else {
+      alert('No failed saves to retry.');
+    }
+  });
+};

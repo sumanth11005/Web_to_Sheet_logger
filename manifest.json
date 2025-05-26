@@ -3,12 +3,7 @@
   "name": "Web_to_Sheet_Logger",
   "version": "1.0",
   "description": "A simple Chrome extension with a popup and content script.",
-  "permissions": [
-    "contextMenus",
-    "activeTab",
-    "storage",
-    "https://script.google.com/*"
-  ],
+  "permissions": ["activeTab", "https://script.google.com/*", "storage", "contextMenus"],
   "host_permissions": ["https://script.google.com/*"],
 
   "action": {

@@ -1,42 +1,38 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "sendToSheet") {
-    const sendToSheet = async () => {
-      try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbwpTy_jgOh3xqNq-Ncfc8TZyNSmZv-DKeKKEoe9m2fjtgwyu0SNt8I2PQLnl5b1T3x5/exec", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(message.metadata),
-        });
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: "save-to-sheet",
+    title: "Save selection to Sheet",
+    contexts: ["selection"],
+  });
+});
 
-        const text = await response.text(); // Get raw text first
-        console.log("Raw response:", text);
-
-        if (!response.ok) {
-          throw new Error(`Server error: ${response.status}`);
-        }
-
-        // Check if response is HTML
-        if (text.trim().startsWith('<!DOCTYPE')) {
-          console.warn('Received HTML response:', text.slice(0, 100));
-          sendResponse({ status: "success", message: "Data saved to sheet, but received HTML response." });
-          return;
-        }
-
-        const result = JSON.parse(text);
-        console.log("Parsed result:", result);
-        sendResponse({ status: "success", result });
-      } catch (error) {
-        console.error("Error during fetch:", error);
-        sendResponse({ status: "error", message: error.message });
-      }
-    };
-
-    sendToSheet().finally(() => {
-      console.log("Request completed, resetting state if needed.");
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === "save-to-sheet" && info.selectionText) {
+    chrome.tabs.sendMessage(tab.id, {
+      action: "showPopupFromContext",
+      selectedText: info.selectionText,
     });
+  }
+});
 
-    return true; // Keep the message channel open for async response
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "sendToSheet") {
+    fetch("https://script.google.com/macros/s/AKfycbzEq0bZo9n453P55ChpMgB0TWKXuu28gJlSTv94Lm61ti1SD4mgMBtEfaL_d39No4Ch/exec", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(request.metadata),
+    })
+      .then((response) => response.text())
+      .then((text) => {
+        if (text.includes('<!DOCTYPE')) {
+          sendResponse({ status: "success" });
+        } else {
+          const result = JSON.parse(text);
+          sendResponse(result);
+        }
+      })
+      .catch((error) => sendResponse({ status: "error", message: error.message }));
+
+    return true;
   }
 });
