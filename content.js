@@ -205,6 +205,11 @@ document.getElementById('send-to-sheet').onclick = async function () {
   sendWithRetry(metadata);
 };
 
+// Add functionality to close the popup
+document.getElementById('close-popup').onclick = function () {
+  document.getElementById('confirmation-popup').style.display = 'none';
+};
+
 // Debounce function to limit event firing
 function debounce(func, wait) {
   let timeout;
