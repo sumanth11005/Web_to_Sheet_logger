@@ -14,6 +14,56 @@ saveButton.style.cursor = 'pointer';
 saveButton.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
 document.body.appendChild(saveButton);
 
+// Create a confirmation popup
+definePopup();
+
+function definePopup() {
+  const popup = document.createElement('div');
+  popup.id = 'confirmation-popup';
+  popup.style.position = 'fixed';
+  popup.style.display = 'none';
+  popup.style.zIndex = '1001';
+  popup.style.padding = '15px';
+  popup.style.backgroundColor = '#fff';
+  popup.style.color = '#000';
+  popup.style.border = '1px solid #ccc';
+  popup.style.borderRadius = '5px';
+  popup.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.2)';
+  popup.style.width = '300px';
+  popup.style.top = '20px';
+  popup.style.left = '50%';
+  popup.style.transform = 'translateX(-50%)';
+  popup.style.fontFamily = 'Arial, sans-serif';
+  popup.style.fontSize = '14px';
+  popup.style.lineHeight = '1.5';
+  popup.innerHTML = `
+    <p><strong>Selected Text:</strong> <span id="popup-text"></span></p>
+    <p><strong>Page Title:</strong> <span id="popup-title"></span></p>
+    <p><strong>Page URL:</strong> <span id="popup-url"></span></p>
+    <p><strong>Timestamp:</strong> <span id="popup-timestamp"></span></p>
+    <button id="send-to-sheet" style="
+      margin-top: 10px;
+      padding: 5px 10px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    ">Send to Sheet</button>
+    <button id="close-popup" style="
+      margin-top: 10px;
+      margin-left: 10px;
+      padding: 5px 10px;
+      background-color: #dc3545;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    ">Close</button>
+  `;
+  document.body.appendChild(popup);
+}
+
 // Event listener for text selection
 document.addEventListener('mouseup', function () {
   const selectedText = window.getSelection().toString().trim();
@@ -29,7 +79,37 @@ document.addEventListener('mouseup', function () {
 
     // Save the selected text when the button is clicked
     saveButton.onclick = function () {
-      console.log('Selected text:', selectedText);
+      const selectedText = window.getSelection().toString().trim();
+      if (selectedText) {
+        const metadata = {
+          text: selectedText,
+          title: document.title,
+          url: window.location.href,
+          timestamp: new Date().toISOString(),
+        };
+
+        // Populate the popup with metadata
+        document.getElementById('popup-text').textContent = metadata.text;
+        document.getElementById('popup-title').textContent = metadata.title;
+        document.getElementById('popup-url').textContent = metadata.url;
+        document.getElementById('popup-timestamp').textContent = metadata.timestamp;
+
+        // Show the popup
+        const popup = document.getElementById('confirmation-popup');
+        popup.style.display = 'block';
+
+        // Handle "Send to Sheet" button click
+        document.getElementById('send-to-sheet').onclick = function () {
+          console.log('Sending to sheet:', metadata);
+          alert('Data sent to sheet (placeholder for actual implementation).');
+          popup.style.display = 'none';
+        };
+
+        // Handle "Close" button click
+        document.getElementById('close-popup').onclick = function () {
+          popup.style.display = 'none';
+        };
+      }
       saveButton.style.display = 'none'; // Hide the button after saving
     };
   } else {
